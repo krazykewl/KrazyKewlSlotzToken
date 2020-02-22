@@ -13,12 +13,12 @@ contract KrazyKewlSlotsToken{
      event Transfer(address indexed from,address indexed to, uint256 value);
     event Approval(address indexed _owner,address indexed _spender,uint256 value);
     event Burn(address indexed from,uint256 value);
-    event DiceResult(uint256 value);
+    event SlotResult(uint256 value);
     
-    uint256 public participant1_count;
-    uint256 participant1_amount;
-    uint256 participant1_diceresult;
-    address participant1_address;
+    uint256 public player_count;
+    uint256 player_amount;
+    uint256 player_slotresult;
+    address player_address;
     
     uint256 initialSupply = 2000000;
     string tokenName = 'KrazyKewlSlotsToken';
@@ -80,50 +80,50 @@ contract KrazyKewlSlotsToken{
         return true;
     }
     
-    function placeBet(uint256 _value,uint256 _diceresult)public returns(bool success){
+    function didBet(uint256 _value,uint256 _slotresult)public returns(bool success){
         require(balanceOf[msg.sender] >= _value);
         balanceOf[msg.sender] -= _value;
         balanceOf[owner] += _value;
         
-        participant1_count +=1;
+        player_count +=1;
         
-        if(participant1_count == 1){
-            participant1_diceresult = _diceresult;
-            participant1_amount = _value;
-            participant1_address = msg.sender;
-            emit DiceResult(999);
+        if(player_count == 1){
+            player_diceresult = _diceresult;
+            player_amount = _value;
+            player_address = msg.sender;
+            emit SlotResult(999);
         }
-        if(participant1_count == 2){
-            if(participant1_diceresult == _diceresult){
-                balanceOf[participant1_address] += participant1_amount;
+        if(player_count == 2){
+            if(player_diceresult == _slotresult){
+                balanceOf[player_address] += player_amount;
                 balanceOf[msg.sender] += _value;
-                balanceOf[owner] -= participant1_amount;
+                balanceOf[owner] -= player_amount;
                 balanceOf[owner] -= _value;
-                emit DiceResult(0);//Draw
+                emit SlotResult(0);//Draw
                 
             }
             
-            if(participant1_diceresult > _diceresult){
-                balanceOf[participant1_address] += participant1_amount;
-                balanceOf[participant1_address] += _value;
-                balanceOf[owner] -= participant1_amount;
+            if(player_slotresult > _slotresult){
+                balanceOf[player_address] += player_amount;
+                balanceOf[player_address] += _value;
+                balanceOf[owner] -= player_amount;
                 balanceOf[owner] -= _value;
-                emit DiceResult(1);//player1 wins
+                emit SlotResult(1);//player1 wins
                 
             }
             
-            if(participant1_diceresult < _diceresult){
-                balanceOf[msg.sender] += participant1_amount;
+            if(player_slotresult < _slotresult){
+                balanceOf[msg.sender] += player_amount;
                 balanceOf[msg.sender] += _value;
-                balanceOf[owner] -= participant1_amount;
+                balanceOf[owner] -= player_amount;
                 balanceOf[owner] -= _value;
-                emit DiceResult(2);//player2 wins
+                emit SlotResult(2);//player2 wins
                 
             }
-            participant1_amount = 0;
-            participant1_count = 0;
-            participant1_diceresult = 0;
-            participant1_address = 0x0;
+            player_amount = 0;
+            player_count = 0;
+            player_slotresult = 0;
+            player_address = 0x0;
         }
         return true;
         
